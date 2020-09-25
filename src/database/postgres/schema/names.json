@@ -1,0 +1,8 @@
+{
+  "usuario": {
+    "name": "usuario",
+    "tableName": "usuario",
+    "freezeTableName": true,
+    "timestamps": false
+  }
+}

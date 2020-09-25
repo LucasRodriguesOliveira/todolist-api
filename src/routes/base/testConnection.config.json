@@ -1,0 +1,13 @@
+{
+  "name": "test",
+  "path": [
+    "/test"
+  ],
+  "routes": {
+    "testConnection": {
+      "description": "Test Connection",
+      "notes": "Checks the server status"
+    }
+  },
+  "strings": []
+}

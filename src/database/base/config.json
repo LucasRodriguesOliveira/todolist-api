@@ -1,0 +1,21 @@
+{
+  "postgres": {
+    "name": "postgres",
+    "logMessage": "Database PostgreSQL is running.",
+    "quoteIdentifiers": false,
+    "operatorAliases": false,
+    "logging": false,
+    "raw": true
+  },
+  "global": {
+    "ErrorConnectionLog": "Connection Error!"
+  },
+  "context": {
+    "databases": [
+      "postgres",
+      "oracle",
+      "mongodb"
+    ],
+    "dbNotFoundMsg": "Database not avaible to create."
+  }
+}
