@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
 
 const {
-  usuario: {
-    name,
+  tarefa: {
     freezeTableName,
+    name,
     tableName,
     timestamps
   }
@@ -16,17 +16,23 @@ const schema = {
     primaryKey: true,
     autoIncrement: true
   },
-  nome: {
-    type: Sequelize.STRING(60),
-    allowNull: false,
+  idUsuario: {
+    type: Sequelize.INTEGER,
+    allowNull: false
   },
-  email: {
-    type: Sequelize.STRING(100),
+  titulo: {
+    type: Sequelize.STRING(32),
     allowNull: false,
+    defaultValue: 'Nova Tarefa',
   },
-  senha: {
+  descricao: {
     type: Sequelize.STRING(150),
+    allowNull: false
+  },
+  concluido: {
+    type: Sequelize.SMALLINT,
     allowNull: false,
+    defaultValue: 0
   },
   dataCriacao: {
     type: Sequelize.DATE,
@@ -48,7 +54,7 @@ const schema = {
     allowNull: false,
     defaultValue: 0
   }
-};
+}
 
 const options = {
   tableName,

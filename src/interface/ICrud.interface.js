@@ -16,14 +16,6 @@ class ICrud {
   delete() {
     throw new NotImplementedException('function delete');
   }
-
-  isConnected() {
-    throw new NotImplementedException('function isConnected');
-  }
-
-  connect() {
-    throw new NotImplementedException('function connect');
-  }
 }
 
 module.exports = ICrud;

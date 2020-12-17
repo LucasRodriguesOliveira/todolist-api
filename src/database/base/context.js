@@ -43,12 +43,8 @@ class Context extends ICrud {
     return this.#database.connect();
   }
 
-  async defineModel(
-    name = setRequiredParameter('name'),
-    schema = setRequiredParameter('name'),
-    options = setRequiredParameter('name')
-  ) {
-    return await this.#database.defineModel(name, schema, options);
+  async defineModel(model = setRequiredParameter('model')) {
+    return await this.#database.defineModel(model);
   }
 
   set Schema(schema) {

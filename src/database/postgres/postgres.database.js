@@ -17,13 +17,17 @@ class Postgres extends IDatabase {
       POSTGRES_HOST: host,
       POSTGRES_PORT: port,
       POSTGRES_DIALECT: dialect
-    } = process.env;
+    } = process.env;                                    
     const { quoteIdentifiers, operatorAliases, logging } = CONFIG;
     const opts = { host, port, dialect, quoteIdentifiers, operatorAliases, logging };
 
     return new Sequelize(db, user, pass, opts);
   }
 
+  static logQueries(sql) {
+    sql.includes('DELETE') && console.log(sql);
+  }
+ 
   async isConnected() {
     try {
       await this.connection.authenticate();
@@ -34,7 +38,7 @@ class Postgres extends IDatabase {
     }
   }
 
-  async defineModel(name, schema, options) {
+  async defineModel({name, schema, options}) {
     const model = this.connection.define(name, schema, options);
     await model.sync();
 
@@ -59,7 +63,7 @@ class Postgres extends IDatabase {
   }
 
   async update(id, item) {
-    return await this.#schema.update(item, { where: { id } });
+    return await this.#schema.update({...item, dataAtualizacao: new Date()}, { where: { id } });
   }
 
   async delete(id) {

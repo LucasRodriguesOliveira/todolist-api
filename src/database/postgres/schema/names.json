@@ -4,5 +4,18 @@
     "tableName": "usuario",
     "freezeTableName": true,
     "timestamps": false
+  },
+  "tarefa": {
+    "name": "tarefa",
+    "tableName": "tarefa",
+    "freezeTableName": true,
+    "timestamps": false
+  }
+  ,
+  "item": {
+    "name": "item",
+    "tableName": "item",
+    "freezeTableName": true,
+    "timestamps": false
   }
 }
