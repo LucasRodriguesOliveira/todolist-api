@@ -5,8 +5,11 @@ const TarefaModel = require('../src/model/tarefa.model');
 const ItemModel = require('../src/model/item.model');
 
 // * Configure Environment
-const { configEnviroment } = require('../src/helper/config');
-configEnviroment(process.env.NODE_ENV);
+if(!globalThis.envSetup){
+  const { configEnviroment } = require('../src/helper/config');
+  configEnviroment(process.env.NODE_ENV);
+  globalThis.envSetup = true;
+}
 
 describe('Postgres Strategy Suite', function() {
   this.timeout(Infinity);

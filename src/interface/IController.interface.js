@@ -5,6 +5,7 @@ class IController extends ICrud {
   #database = {};
 
   constructor(database) {
+    super();
     this.#database = database;
   }
 
