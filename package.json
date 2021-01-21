@@ -4,7 +4,7 @@
   "description": "API para aplicação todo-list",
   "main": "./src/server.js",
   "scripts": {
-    "test": "mocha ./test/*.test.js",
+    "test": "SET NODE_ENV=test&& mocha ./test/*.test.js",
     "doc": "jsdoc -c jsdoc.config.json -R ./README.md",
     "dev": "SET NODE_ENV=development&& node ./src/server"
   },

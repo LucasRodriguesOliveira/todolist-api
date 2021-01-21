@@ -5,7 +5,12 @@
     "quoteIdentifiers": false,
     "operatorAliases": false,
     "logging": false,
-    "raw": true
+    "raw": true,
+    "boolPropNames": [
+      "concluido",
+      "excluido",
+      "ativo"
+    ]
   },
   "global": {
     "ErrorConnectionLog": "Connection Error!"

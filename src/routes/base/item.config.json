@@ -1,0 +1,28 @@
+{
+  "name": "item",
+  "routes": {
+    "create": {
+      "description": "Create item",
+      "notes": "Creates one item",
+      "path": "/item"
+    },
+    "readByTaskId": {
+      "description": "Read Items",
+      "notes": "Reads all items from task id",
+      "path": "/item/task/{id}"
+    },
+    "updateItem": {
+      "description": "Update Item",
+      "notes": "Updates one item",
+      "path": "/item/{id}"
+    },
+    "deleteItem": {
+      "description": "Delete Item",
+      "notes": "Updates field 'excluido' to true, meaning that the item was logically excluded",
+      "path": "/item/{id}"
+    }
+  },
+  "strings": {
+    "novo": "Novo item"
+  }
+}

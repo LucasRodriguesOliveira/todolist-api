@@ -11,18 +11,14 @@ const { configRegister, configAuthStrategy } = require('./helper/config');
 let database;
 try {
   database = Context.createContext(process.env.DATABASE);
-  // let res = await database.create({
-  //   nome: 'Teste',
-  //   email: 'teste@teste.com',
-  //   senha: '123'
-  // });
 } catch(err) {
   console.log(err);
 }
 
 // * Setting up the server
 const app = new Hapi.server({
-  port: process.env.PORT
+  port: process.env.PORT,
+  host: process.env.HOST,
 });
 
 async function main() {
@@ -40,7 +36,7 @@ async function main() {
   try {
     await app.start();
 
-    console.log('Server running on port: ', app.info.port);
+    console.log('Server running on %s', app.info.uri);
     return app;
   } catch(err) {
     console.log(`An unexpected error has ocurred! ${err}`);

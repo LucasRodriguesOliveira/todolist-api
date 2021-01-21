@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize');
 
 const {
-  usuario: {
-    name,
+  item: {
     freezeTableName,
+    name,
     tableName,
     timestamps
   }
@@ -12,36 +12,33 @@ const {
 const schema = {
   id: {
     type: Sequelize.INTEGER,
-    allowNull: false,
     primaryKey: true,
+    allowNull: false,
     autoIncrement: true
   },
-  nome: {
-    type: Sequelize.STRING(60),
-    allowNull: false,
+  idtarefa: {
+    type: Sequelize.INTEGER,
+    allowNull: false
   },
-  email: {
-    type: Sequelize.STRING(100),
+  descricao: {
+    type: Sequelize.STRING(50),
     allowNull: false,
+    defaultValue: 'Novo item'
   },
-  senha: {
-    type: Sequelize.STRING(150),
+  concluido: {
+    type: Sequelize.SMALLINT,
     allowNull: false,
+    defaultValue: 0
   },
-  dataCriacao: {
+  datacriacao: {
     type: Sequelize.DATE,
     allowNull: false,
     defaultValue: Sequelize.DataTypes.NOW
   },
-  dataAtualizacao: {
+  dataatualizacao: {
     type: Sequelize.DATE,
     allowNull: false,
     defaultValue: Sequelize.DataTypes.NOW
-  },
-  ativo: {
-    type: Sequelize.TINYINT,
-    allowNull: false,
-    defaultValue: 1
   },
   excluido: {
     type: Sequelize.TINYINT,
@@ -54,7 +51,7 @@ const options = {
   tableName,
   freezeTableName,
   timestamps
-}
+};
 
 module.exports = {
   name,

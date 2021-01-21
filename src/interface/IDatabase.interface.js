@@ -6,6 +6,14 @@ class IDatabase extends ICrud {
     this.name = name;
     this.connection = connection;
   }
+
+  isConnected() {
+    throw new NotImplementedException('function isConnected');
+  }
+
+  connect() {
+    throw new NotImplementedException('function connect');
+  }
 }
 
 module.exports = IDatabase;

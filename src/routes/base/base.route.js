@@ -11,9 +11,12 @@ class BaseRoute {
     this._default = this.config.defaultValues;
 
     this.name = this.childConfig.name;
-    this.path = this.childConfig.path;
     this.routes = this.childConfig.routes;
     this.strings = this.childConfig.strings;
+  }
+
+  getInfo(name) {
+    return [...Object.values(this.routes[name]), this._method, this._default.tags];
   }
 
   static methods() {
