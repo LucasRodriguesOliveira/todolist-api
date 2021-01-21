@@ -23,7 +23,7 @@ class Router {
 
     obj2arr(dirs).forEach(r => {
       Router
-        .mapRoutes((new r(secret, database)), r.methods())
+        .mapRoutes((new r(database, secret)), r.methods())
         .forEach(m => {
           routes.push(m);
         });

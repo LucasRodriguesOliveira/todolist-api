@@ -11,14 +11,13 @@ class Test extends BaseRoute {
 
   testConnection(name) {
     const {
-      path,
       _default: { tags},
       _method
     } = this;
-    const { description, notes } = this.routes[name];
+    const { description, notes, path } = this.routes[name];
 
     return BaseRoute.getTemplate(
-      path[0],
+      path,
       _method.GET,
       BaseRoute.getConfig(tags, description, notes),
       () => this.controller.getStatus()

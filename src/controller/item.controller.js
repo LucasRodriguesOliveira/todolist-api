@@ -19,6 +19,10 @@ class ItemController extends Handler {
     await before();
     return await this.Database.read({ idTarefa });
   }
+
+  async exclude({ id }) {
+    return await this.update(id, { excluido: true });
+  }
 }
 
 module.exports = ItemController;

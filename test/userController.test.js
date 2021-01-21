@@ -14,7 +14,7 @@ if(!globalThis.envSetup){
   globalThis.envSetup = true;
 }
 
-describe.only('User test suite', function () {
+describe('User test suite', function () {
   this.timeout(Infinity);
   this.slow(500);
   let database = {};

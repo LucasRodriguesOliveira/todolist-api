@@ -16,7 +16,7 @@ const schema = {
     allowNull: false,
     autoIncrement: true
   },
-  idTarefa: {
+  idtarefa: {
     type: Sequelize.INTEGER,
     allowNull: false
   },
@@ -30,12 +30,12 @@ const schema = {
     allowNull: false,
     defaultValue: 0
   },
-  dataCriacao: {
+  datacriacao: {
     type: Sequelize.DATE,
     allowNull: false,
     defaultValue: Sequelize.DataTypes.NOW
   },
-  dataAtualizacao: {
+  dataatualizacao: {
     type: Sequelize.DATE,
     allowNull: false,
     defaultValue: Sequelize.DataTypes.NOW

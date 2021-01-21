@@ -23,8 +23,8 @@ class FullHandler extends IController {
   async before() {
     if(!this.schema) {
       this.schema = await this.Database.defineModel(this.Model.getSchema(this.Database.name));
-      this.Database.Schema = this.schema;
     }
+    this.Database.Schema = this.schema;
   }
 
   /**
@@ -34,7 +34,8 @@ class FullHandler extends IController {
    */
   async create(item) {
     await this.before();
-    return await this.Database.create(item);
+    const res = await this.Database.create(item);
+    return res;
   }
 
   async read(query) {
