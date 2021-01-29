@@ -9,6 +9,7 @@ const { USUARIO, TAREFA, ITEM } = require('./helper/dataMock.json');
 require('./helper/before')();
 
 describe('Item Controller suite', function () {
+  this.timeout(Infinity);
   let database = {};
   let controller = {};
   let usuarioSchema = {};

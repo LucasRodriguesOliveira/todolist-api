@@ -8,6 +8,7 @@ const { USUARIO, TAREFA, ITEM } = require('./helper/dataMock.json');
 require('./helper/before')();
 
 describe('Postgres Strategy suite', function() {
+  this.timeout(Infinity);
   let database = {};
   let usuarioSchema = {};
   let tarefaSchema = {};

@@ -4,6 +4,7 @@ const { USUARIO, TAREFA, ITEM } = require('./helper/dataMock.json');
 require('./helper/before')();
 
 describe('Item Route test suite', function () {
+  this.timeout(Infinity);
   let app;
 
   const UserController = require('../src/controller/user.controller');
@@ -33,7 +34,7 @@ describe('Item Route test suite', function () {
     let item = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
+      usr = await userController.register(USUARIO);
       task = await taskController.create({...TAREFA, idusuario: usr.id});
     });
 
@@ -63,7 +64,7 @@ describe('Item Route test suite', function () {
     let item = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
+      usr = await userController.register(USUARIO);
       task = await taskController.create({...TAREFA, idusuario: usr.id});
       item = await itemController.create({...ITEM, idtarefa: task.id});
     });
@@ -93,7 +94,7 @@ describe('Item Route test suite', function () {
     let item = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
+      usr = await userController.register(USUARIO);
       task = await taskController.create({...TAREFA, idusuario: usr.id});
       item = await itemController.create({...ITEM, idtarefa: task.id});
     });
@@ -159,7 +160,7 @@ describe('Item Route test suite', function () {
     let item = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
+      usr = await userController.register(USUARIO);
       task = await taskController.create({...TAREFA, idusuario: usr.id});
       item = await itemController.create({...ITEM, idtarefa: task.id});
     });

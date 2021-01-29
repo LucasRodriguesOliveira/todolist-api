@@ -10,7 +10,6 @@ require('./helper/before')();
 
 describe('Task Controller suite', function() {
   this.timeout(Infinity);
-  this.slow(500);
   let database = {};
   let controller = {};
   let usuarioSchema = {};

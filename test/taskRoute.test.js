@@ -3,7 +3,7 @@ const { USUARIO, TAREFA } = require('./helper/dataMock.json');
 
 require('./helper/before')();
 
-describe.only('Task route test suite', function() {
+describe('Task route test suite', function() {
   this.timeout(Infinity);
   let app;
 
@@ -30,7 +30,7 @@ describe.only('Task route test suite', function() {
     let task = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
+      usr = await userController.register(USUARIO);
     });
 
     this.afterAll(async () => {
@@ -70,7 +70,7 @@ describe.only('Task route test suite', function() {
     let task = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
+      usr = await userController.register(USUARIO);
       task = await taskController.create({...TAREFA, idusuario: usr.id});
     });
 
@@ -128,7 +128,7 @@ describe.only('Task route test suite', function() {
     let url = '/task/id';
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
+      usr = await userController.register(USUARIO);
     });
 
     this.beforeEach(async () => {
@@ -285,7 +285,7 @@ describe.only('Task route test suite', function() {
     let task = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
+      usr = await userController.register(USUARIO);
       task = await taskController.create({...TAREFA, idusuario: usr.id});
     });
 

@@ -1,0 +1,15 @@
+{
+  "name": "user",
+  "routes": {
+    "register": {
+      "description": "Register User",
+      "notes": "Creates a new user account",
+      "path": "/register"
+    },
+    "login": {
+      "description": "Login User",
+      "notes": "Signin user to system",
+      "path": "/login"
+    }
+  }
+}

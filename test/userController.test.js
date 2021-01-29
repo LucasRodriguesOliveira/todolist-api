@@ -10,6 +10,7 @@ const Jwt = require('jsonwebtoken');
 require('./helper/before')();
 
 describe('User test suite', function () {
+  this.timeout(Infinity);
   let database = {};
   let controller = {};
   let usuarioSchema = {};
@@ -59,7 +60,7 @@ describe('User test suite', function () {
 
   describe('Create', function () {
     it('Creates a new user', async () => {
-      const res = await controller.create(USUARIO);
+      const res = await controller.register(USUARIO);
       addToExclude(res);
 
       expect(res).to.not.null;
