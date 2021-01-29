@@ -7,16 +7,9 @@ const Controller = require('../src/controller/user.controller');
 const { USUARIO, TAREFA, ITEM } = require('./helper/dataMock.json');
 const Jwt = require('jsonwebtoken');
 
-// * Configure Environment
-if(!globalThis.envSetup){
-  const { configEnviroment } = require('../src/helper/config');
-  configEnviroment(process.env.NODE_ENV);
-  globalThis.envSetup = true;
-}
+require('./helper/before')();
 
 describe('User test suite', function () {
-  this.timeout(Infinity);
-  this.slow(500);
   let database = {};
   let controller = {};
   let usuarioSchema = {};
@@ -29,16 +22,6 @@ describe('User test suite', function () {
   const createUsuario = async usuario => {
     database.Schema = usuarioSchema;
     return create(usuario);
-  }
-
-  const createTarefa = async tarefa => {
-    database.Schema = tarefaSchema;
-    return create(tarefa);
-  }
-
-  const createItem = async item => {
-    database.Schema = itemSchema;
-    return create(item);
   }
 
   const addToExclude = o => {

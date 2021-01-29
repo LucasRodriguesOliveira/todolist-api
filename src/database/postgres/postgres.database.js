@@ -38,6 +38,16 @@ class Postgres extends IDatabase {
     }
   }
 
+  async close() {
+    try {
+      await this.connection.close();
+      console.log('Connection with database closed.');
+    } catch(err) {
+      console.log(`An error ocurred while trying to close connection (postgres.database).`);
+      console.log(err);
+    }
+  }
+
   async defineModel({name, schema, options}) {
     const model = this.connection.define(name, schema, options);
     await model.sync();

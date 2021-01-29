@@ -3,17 +3,11 @@ const Postgres = require('../src/database/postgres/postgres.database');
 const UsuarioModel = require('../src/model/usuario.model');
 const TarefaModel = require('../src/model/tarefa.model');
 const ItemModel = require('../src/model/item.model');
+const { USUARIO, TAREFA, ITEM } = require('./helper/dataMock.json');
 
-// * Configure Environment
-if(!globalThis.envSetup){
-  const { configEnviroment } = require('../src/helper/config');
-  configEnviroment(process.env.NODE_ENV);
-  globalThis.envSetup = true;
-}
+require('./helper/before')();
 
-describe('Postgres Strategy Suite', function() {
-  this.timeout(Infinity);
-  this.slow(500);
+describe('Postgres Strategy suite', function() {
   let database = {};
   let usuarioSchema = {};
   let tarefaSchema = {};
@@ -83,10 +77,14 @@ describe('Postgres Strategy Suite', function() {
     tarefaSchema = await database.defineModel(TarefaModel.getSchema(database.name));
     itemSchema = await database.defineModel(ItemModel.getSchema(database.name));
 
-    usuarioSchema.hasMany(tarefaSchema, { foreignKey: 'idUsuario' });
-    tarefaSchema.belongsTo(usuarioSchema, { foreignKey: 'idUsuario' });
-    tarefaSchema.hasMany(itemSchema, { foreignKey: 'idTarefa' });
-    itemSchema.belongsTo(tarefaSchema, { foreignKey: 'idTarefa' });
+    usuarioSchema.hasMany(tarefaSchema, { foreignKey: 'idusuario' });
+    tarefaSchema.belongsTo(usuarioSchema, { foreignKey: 'idusuario' });
+    tarefaSchema.hasMany(itemSchema, { foreignKey: 'idtarefa' });
+    itemSchema.belongsTo(tarefaSchema, { foreignKey: 'idtarefa' });
+  });
+
+  this.afterAll(async () => {
+    await database.close();
   });
 
   describe('Connection', () => {
@@ -97,134 +95,88 @@ describe('Postgres Strategy Suite', function() {
   });
 
   describe('Create', function() {
-    const USUARIO_MOCK = {
-      nome: 'Test',
-      email: 'test@test.com',
-      senha: '123'
-    };
-
-    const USUARIO_MOCK_TAREFA = { ...USUARIO_MOCK };
-    const USUARIO_MOCK_ITEM = { ...USUARIO_MOCK };
-
-    const TAREFA_MOCK = {
-      idUsuario: 0,
-      titulo: 'Tarefa Teste',
-      descricao: 'Descricao de teste'
-    };
-
-    const TAREFA_MOCK_ITEM = { ...TAREFA_MOCK };
-
-    const ITEM_MOCK = {
-      idTarefa: 0,
-      descricao: 'Atividade de teste'
-    }
-
     this.afterAll(async () => { await deleteItemsCreated(); });
 
     it('Creates a user successfully', async () => {
       database.Schema = usuarioSchema;
-      const { id } = await database.create(USUARIO_MOCK);
+      const { id } = await database.create(USUARIO);
       objectsToDelete.push({ schema: usuarioSchema, id });
 
-      USUARIO_MOCK.id = id
-
-      expect(USUARIO_MOCK.id).to.not.undefined;
-      expect(USUARIO_MOCK.id).to.not.null;
-      expect(USUARIO_MOCK.id).to.be.a('number');
+      expect(id).to.not.undefined;
+      expect(id).to.not.null;
+      expect(id).to.be.a('number');
     });
 
     it('Creates a task successfully', async () => {
-      USUARIO_MOCK_TAREFA.id = await createUsuario(USUARIO_MOCK_TAREFA);
-      objectsToDelete.push({ schema: usuarioSchema, id: USUARIO_MOCK_TAREFA.id });
-      TAREFA_MOCK.idUsuario = USUARIO_MOCK_TAREFA.id;
+      idusuario = await createUsuario(USUARIO);
+      objectsToDelete.push({ schema: usuarioSchema, id: idusuario });
 
       database.Schema = tarefaSchema;
-      const { id } = await database.create(TAREFA_MOCK);
-      TAREFA_MOCK.id = id;
+      const { id } = await database.create({...TAREFA, idusuario});
       objectsToDelete.push({ schema: tarefaSchema, id });
 
-      expect(TAREFA_MOCK.id).to.not.undefined;
-      expect(TAREFA_MOCK.id).to.not.null;
-      expect(TAREFA_MOCK.id).to.be.a('number');
+      expect(id).to.not.undefined;
+      expect(id).to.not.null;
+      expect(id).to.be.a('number');
     });
 
     it('Creates a task item successfully', async () => {
-      USUARIO_MOCK_ITEM.id = await createUsuario(USUARIO_MOCK_ITEM);
-      objectsToDelete.push({ schema: usuarioSchema, id: USUARIO_MOCK_ITEM.id });
-      TAREFA_MOCK_ITEM.idUsuario = USUARIO_MOCK_ITEM.id;
-      TAREFA_MOCK_ITEM.id = await createTarefa(TAREFA_MOCK_ITEM);
-      objectsToDelete.push({ schema: tarefaSchema, id: TAREFA_MOCK_ITEM.id });
-      ITEM_MOCK.idTarefa = TAREFA_MOCK_ITEM.id;
+      idusuario = await createUsuario(USUARIO);
+      objectsToDelete.push({ schema: usuarioSchema, id: idusuario });
+      idtarefa = await createTarefa({...TAREFA, idusuario});
+      objectsToDelete.push({ schema: tarefaSchema, id: idtarefa });
 
       database.Schema = itemSchema;
-      const { id } = await database.create(ITEM_MOCK);
-      ITEM_MOCK.id = id;
+      const { id } = await database.create({...ITEM, idtarefa});
       objectsToDelete.push({ schema: itemSchema, id });
 
-      expect(ITEM_MOCK.id).to.not.undefined;
-      expect(ITEM_MOCK.id).to.not.null;
-      expect(ITEM_MOCK.id).to.be.a('number');
+      expect(id).to.not.undefined;
+      expect(id).to.not.null;
+      expect(id).to.be.a('number');
     });
   });
 
   describe('Read', function() {
-    const USUARIO_MOCK = {
-      nome: 'Test',
-      email: 'test@test.com',
-      senha: '123'
-    };
-
-    const TAREFA_MOCK = {
-      idUsuario: 0,
-      titulo: 'Tarefa Teste',
-      descricao: 'Descricao de teste'
-    };
-
-    const ITEM_MOCK = {
-      idTarefa: 0,
-      descricao: 'Atividade de teste'
-    }
-
     this.afterAll(async () => { await deleteItemsCreated(); });
 
     describe('Read One', () => {
       it('Reads one user', async () => {
-        await createManyUsers(2, USUARIO_MOCK);
+        await createManyUsers(2, USUARIO);
         
         database.Schema = usuarioSchema;
         let users = await database.read({ id: objectsToDelete[0].id });
         
         expect(users).to.be.an('array').that.is.not.empty;
         expect(users).to.have.length(1);
-        expect(users[0]).to.have.property('id');
+        expect(users).to.have.nested.property('0.id', objectsToDelete[0].id);
       });
 
       it('Reads one task', async () => {
-        await createManyUsers(1, USUARIO_MOCK);
-        TAREFA_MOCK.idUsuario = objectsToDelete[objectsToDelete.length - 1].id;
-        await createManyTasks(2, TAREFA_MOCK);
+        await createManyUsers(1, USUARIO);
+        const idusuario = objectsToDelete[objectsToDelete.length - 1].id;
+        await createManyTasks(2, {...TAREFA, idusuario});
 
         database.Schema = tarefaSchema;
         let tasks = await database.read({ id: objectsToDelete.find(o => o.schema === tarefaSchema).id });
 
         expect(tasks).to.be.an('array').that.is.not.empty;
         expect(tasks).to.have.length(1);
-        expect(tasks[0]).to.have.property('id');
+        expect(tasks).to.have.nested.property('[0].id');
       });
 
       it('Reads one item', async () => {
-        await createManyUsers(1, USUARIO_MOCK);
-        TAREFA_MOCK.idUsuario = objectsToDelete.find(o => o.schema === usuarioSchema).id
-        await createManyTasks(1, TAREFA_MOCK);
-        ITEM_MOCK.idTarefa = objectsToDelete.find(o => o.schema === tarefaSchema).id
-        await createManyTaskItems(2, ITEM_MOCK);
+        await createManyUsers(1, USUARIO);
+        const idusuario = objectsToDelete.find(o => o.schema === usuarioSchema).id
+        await createManyTasks(1, { ...TAREFA, idusuario });
+        const idtarefa = objectsToDelete.find(o => o.schema === tarefaSchema).id
+        await createManyTaskItems(2, {...ITEM, idtarefa});
 
         database.Schema = itemSchema;
         let items = await database.read({ id: objectsToDelete.find(o => o.schema === itemSchema).id });
 
         expect(items).to.be.an('array').that.is.not.empty;
         expect(items).to.have.length(1);
-        expect(items[0]).to.have.property('id');
+        expect(items).to.have.nested.property('0.id');
       });
     });
 
@@ -233,12 +185,15 @@ describe('Postgres Strategy Suite', function() {
       const TASKS_COUNT = 5;
       const TASK_ITEMS_COUNT = 5;
 
+      let idusuario;
+      let idtarefa;
+
       this.beforeAll(async () => {
-        await createManyUsers(USERS_COUNT, USUARIO_MOCK);
-        TAREFA_MOCK.idUsuario = objectsToDelete[objectsToDelete.length - 1].id;
-        await createManyTasks(TASKS_COUNT, TAREFA_MOCK);
-        ITEM_MOCK.idTarefa = objectsToDelete[objectsToDelete.length - 1].id;
-        await createManyTaskItems(TASK_ITEMS_COUNT, ITEM_MOCK);
+        await createManyUsers(USERS_COUNT, USUARIO);
+        idusuario = objectsToDelete[objectsToDelete.length - 1].id;
+        await createManyTasks(TASKS_COUNT, {...TAREFA, idusuario});
+        idtarefa = objectsToDelete[objectsToDelete.length - 1].id;
+        await createManyTaskItems(TASK_ITEMS_COUNT, {...ITEM, idtarefa});
       });
 
       it('Read all users', async () => {
@@ -247,7 +202,7 @@ describe('Postgres Strategy Suite', function() {
 
         expect(users).to.be.an('array').that.is.not.empty;
         expect(users).to.have.length.gte(USERS_COUNT);
-        expect(users[0]).to.have.property('id');
+        expect(users).to.have.nested.property('0.id');
       });
 
       it('Read all tasks', async () => {
@@ -256,52 +211,35 @@ describe('Postgres Strategy Suite', function() {
 
         expect(tasks).to.be.an('array').that.is.not.empty;
         expect(tasks).to.have.length.gte(TASKS_COUNT);
-        expect(tasks[0]).to.have.property('id');
+        expect(tasks).to.have.nested.property('0.id');
       });
 
       it('Read all tasks from one user', async () => {
         const { dataValues: user } = await usuarioSchema.findOne({
-          where: { id: TAREFA_MOCK.idUsuario }, 
+          where: { id: idusuario },
           include: tarefaSchema
         });
         const { tarefas } = user;
 
         expect(tarefas).to.be.an('array').that.is.not.empty;
         expect(tarefas).to.have.length.gte(TASKS_COUNT);
-        expect(tarefas[0]).to.have.property('id');
+        expect(tarefas).to.have.nested.property('0.id');
       });
 
       it("Read all task item's from one task", async () => {
         const { dataValues: { items } } = await tarefaSchema.findOne({
-          where: { id: ITEM_MOCK.idTarefa },
+          where: { id: idtarefa },
           include: itemSchema
         });
 
         expect(items).to.be.an('array').that.is.not.empty;
         expect(items).to.have.length.gte(TASKS_COUNT);
-        expect(items[0]).to.have.property('id');
+        expect(items).to.have.nested.property('0.id');
       });
     });
   });
 
   describe('Update', function() {
-    const USUARIO_MOCK = {
-      nome: 'Test',
-      email: 'test@test.com',
-      senha: '123'
-    };
-
-    const TAREFA_MOCK = {
-      idUsuario: 0,
-      titulo: 'Tarefa Teste',
-      descricao: 'Descricao de teste'
-    };
-
-    const ITEM_MOCK = {
-      idTarefa: 0,
-      descricao: 'Atividade de teste'
-    }
-
     this.afterAll(async () => { await deleteItemsCreated(); });
 
     describe('Update User', () => {
@@ -311,7 +249,7 @@ describe('Postgres Strategy Suite', function() {
       let usr;
 
       this.beforeAll(async () => {
-        const id = await createUsuario(USUARIO_MOCK);
+        const id = await createUsuario(USUARIO);
         database.Schema = usuarioSchema;
         objectsToDelete.push({ schema: database.Schema, id });
         usr = (await database.read({ id }))[0];
@@ -351,13 +289,13 @@ describe('Postgres Strategy Suite', function() {
     describe('Update Task', () => {
       const NEW_TITLE = 'UPDATE TASK NAME';
       const NEW_DESCRIPTION = 'UPDATE TASK DESCRIPTION';
-      const NEW_DONE = 1; // por questão de compatibilidade, é utilizado 1 ao invés de true
+      const NEW_DONE = true;
       let tsk;
 
       this.beforeAll(async () => {
-        const idUsuario = await createUsuario(USUARIO_MOCK);
-        objectsToDelete.push({ schema: usuarioSchema, id: idUsuario });
-        const id = await createTarefa({...TAREFA_MOCK, idUsuario});
+        const idusuario = await createUsuario(USUARIO);
+        objectsToDelete.push({ schema: usuarioSchema, id: idusuario });
+        const id = await createTarefa({...TAREFA, idusuario});
         database.Schema = tarefaSchema;
         objectsToDelete.push({ schema: database.Schema, id });
         tsk = (await database.read({ id }))[0];
@@ -396,15 +334,15 @@ describe('Postgres Strategy Suite', function() {
 
     describe('Update Task Item', () => {
       const NEW_DESCRIPTION = 'UPDATE TASK ITEM DESCRIPTION';
-      const NEW_DONE = 1; // por questão de compatibilidade, é utilizado 1 ao invés de true
+      const NEW_DONE = true;
       let tskItem;
 
       this.beforeAll(async () => {
-        const idUsuario = await createUsuario(USUARIO_MOCK);
-        objectsToDelete.push({ schema: usuarioSchema, id: idUsuario });
-        const idTarefa = await createTarefa({...TAREFA_MOCK, idUsuario});
-        objectsToDelete.push({ schema: tarefaSchema, id: idTarefa });
-        const id = await createItem({...ITEM_MOCK, idTarefa});
+        const idusuario = await createUsuario(USUARIO);
+        objectsToDelete.push({ schema: usuarioSchema, id: idusuario });
+        const idtarefa = await createTarefa({...TAREFA, idusuario});
+        objectsToDelete.push({ schema: tarefaSchema, id: idtarefa });
+        const id = await createItem({...ITEM, idtarefa});
         database.Schema = itemSchema;
         objectsToDelete.push({ schema: database.Schema, id });
         tskItem = (await database.read({ id }))[0];
@@ -433,29 +371,12 @@ describe('Postgres Strategy Suite', function() {
   });
 
   describe('Delete', function () {
-    const USUARIO_MOCK = {
-      nome: 'Test',
-      email: 'test@test.com',
-      senha: '123'
-    };
-
-    const TAREFA_MOCK = {
-      idUsuario: 0,
-      titulo: 'Tarefa Teste',
-      descricao: 'Descricao de teste'
-    };
-
-    const ITEM_MOCK = {
-      idTarefa: 0,
-      descricao: 'Atividade de teste'
-    }
-
     this.afterAll(async () => { await deleteItemsCreated(); });
 
     describe('Delete User', function () {
       let id;
       this.beforeAll(async () => {
-        id = await createUsuario(USUARIO_MOCK);
+        id = await createUsuario(USUARIO);
       });
 
       it('Delete one user', async () => {
@@ -471,9 +392,9 @@ describe('Postgres Strategy Suite', function() {
     describe('Delete Task', function () {
       let id;
       this.beforeAll(async () => {
-        const idUsuario = await createUsuario(USUARIO_MOCK);
-        objectsToDelete.push({schema: usuarioSchema, id: idUsuario});
-        id = await createTarefa({...TAREFA_MOCK, idUsuario});
+        const idusuario = await createUsuario(USUARIO);
+        objectsToDelete.push({schema: usuarioSchema, id: idusuario});
+        id = await createTarefa({...TAREFA, idusuario});
       });
 
       it('Delete one task', async () => {
@@ -489,11 +410,11 @@ describe('Postgres Strategy Suite', function() {
     describe('Delete Task Item', function () {
       let id;
       this.beforeAll(async () => {
-        const idUsuario = await createUsuario(USUARIO_MOCK);
-        objectsToDelete.push({schema: usuarioSchema, id: idUsuario});
-        const idTarefa = await createTarefa({...TAREFA_MOCK, idUsuario});
-        objectsToDelete.push({schema: tarefaSchema, id: idTarefa});
-        id = await createItem({...ITEM_MOCK, idTarefa});
+        const idusuario = await createUsuario(USUARIO);
+        objectsToDelete.push({schema: usuarioSchema, id: idusuario});
+        const idtarefa = await createTarefa({...TAREFA, idusuario});
+        objectsToDelete.push({schema: tarefaSchema, id: idtarefa});
+        id = await createItem({...ITEM, idtarefa});
       });
 
       it('Delete one task item', async () => {

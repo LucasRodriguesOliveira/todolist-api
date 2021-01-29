@@ -7,7 +7,7 @@
   "TAREFA": {
     "titulo": "Lorem Ipsum",
     "descricao": "Dolor sit amet",
-    "idUsuario": 0
+    "idusuario": 0
   },
   "ITEM": {
     "descricao": "Lorem ipsum dolor sit amet",
