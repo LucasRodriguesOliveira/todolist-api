@@ -16,7 +16,7 @@ class ItemController extends Handler {
   }
 
   async readByTaskId(idTarefa) {
-    await before();
+    await super.before();
     return await this.Database.read({ idTarefa });
   }
 
