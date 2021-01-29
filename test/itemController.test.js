@@ -4,37 +4,18 @@ const UsuarioModel = require('../src/model/usuario.model');
 const TarefaModel = require('../src/model/tarefa.model');
 const Context = require('../src/database/base/context');
 const Controller = require('../src/controller/item.controller');
+const { USUARIO, TAREFA, ITEM } = require('./helper/dataMock.json');
 
-// * Configure Environment
-if(!globalThis.envSetup){
-  const { configEnviroment } = require('../src/helper/config');
-  configEnviroment(process.env.NODE_ENV);
-  globalThis.envSetup = true;
-}
+require('./helper/before')();
 
-describe('Item Controller Suite', function () {
+describe('Item Controller suite', function () {
   this.timeout(Infinity);
-  this.slow(500);
   let database = {};
   let controller = {};
   let usuarioSchema = {};
   let tarefaSchema = {};
   let itemSchema = {};
   let objectsToDelete = [];
-  const USUARIO_MOCK = {
-    nome: 'Test',
-    email: 'test@test.com',
-    senha: '123'
-  };
-  const TAREFA_MOCK = {
-    idUsuario: 0,
-    titulo: 'Tarefa Teste',
-    descricao: 'Descricao de teste'
-  };
-  const ITEM_MOCK = {
-    idTarefa: 0,
-    descricao: 'Atividade de teste'
-  }
 
   const createUsuario = async usuario => {
     database.Schema = usuarioSchema;
@@ -65,9 +46,9 @@ describe('Item Controller Suite', function () {
 
   const addToExclude = o => {
     const props = Object.getOwnPropertyNames(o);
-    const schema = props.includes('idUsuario')
+    const schema = props.includes('idusuario')
       ? tarefaSchema
-      : props.includes('idTarefa') ? itemSchema : usuarioSchema;
+      : props.includes('idtarefa') ? itemSchema : usuarioSchema;
     objectsToDelete.push({ schema, id: o.id });
   }
 
@@ -94,19 +75,19 @@ describe('Item Controller Suite', function () {
   this.afterAll(async () => { await deleteItemsCreated(); });
 
   describe('Create', function () {
-    let idTarefa;
+    let idtarefa;
 
     this.beforeAll(async () => {
-      const idUsuario = await createUsuario(USUARIO_MOCK);
-      const tarefa = {...TAREFA_MOCK, idUsuario};   
-      idTarefa = await createTarefa(tarefa);
+      const idusuario = await createUsuario(USUARIO);
+      const tarefa = {...TAREFA, idusuario};
+      idtarefa = await createTarefa(tarefa);
 
-      addToExclude({...USUARIO_MOCK, id: idUsuario});
-      addToExclude({...tarefa, id: idTarefa});
+      addToExclude({...USUARIO, id: idusuario});
+      addToExclude({...tarefa, id: idtarefa});
     });
 
     it('Creates one item', async () => {
-      const item = {...ITEM_MOCK, idTarefa};
+      const item = {...ITEM, idtarefa};
       const {id} = await controller.create(item);
       
       expect({...item, id}).to.not.undefined;
@@ -120,23 +101,23 @@ describe('Item Controller Suite', function () {
   });
 
   describe('Read', function() {
-    let idTarefa;
+    let idtarefa;
     const COUNT_TASK_ITEMS = 2;
 
     this.beforeAll(async () => {
-      const idUsuario = await createUsuario(USUARIO_MOCK);
-      const tarefa = {...TAREFA_MOCK, idUsuario};
-      idTarefa = await createTarefa(tarefa);
-      const item = {...ITEM_MOCK, idTarefa};
+      const idusuario = await createUsuario(USUARIO);
+      const tarefa = {...TAREFA, idusuario};
+      idtarefa = await createTarefa(tarefa);
+      const item = {...ITEM, idtarefa};
       
-      addToExclude({...USUARIO_MOCK, id: idUsuario});
-      addToExclude({...tarefa, id: idTarefa});
+      addToExclude({...USUARIO, id: idusuario});
+      addToExclude({...tarefa, id: idtarefa});
 
       await createManyTaskItems(COUNT_TASK_ITEMS, item);
     });
 
     it('Reads all items by task id', async () => {
-      const res = await controller.readByTaskId(idTarefa);
+      const res = await controller.readByTaskId(idtarefa);
 
       expect(res).to.be.an('Array');
       expect(res).to.have.lengthOf(COUNT_TASK_ITEMS);
@@ -147,16 +128,16 @@ describe('Item Controller Suite', function () {
     let item;
 
     this.beforeAll(async () => {
-      const idUsuario = await createUsuario(USUARIO_MOCK);
-      const idTarefa = await createTarefa({...TAREFA_MOCK, idUsuario});
-      const idItem = await createItem({...ITEM_MOCK, idTarefa});
+      const idusuario = await createUsuario(USUARIO);
+      const idtarefa = await createTarefa({...TAREFA, idusuario});
+      const iditem = await createItem({...ITEM, idtarefa});
 
       database.Schema = itemSchema;
-      item = (await database.read({ id: idItem }))[0];
+      item = (await database.read({ id: iditem }))[0];
       
-      addToExclude({ id: idUsuario });
-      addToExclude({ idUsuario, id: idTarefa });
-      addToExclude({ idTarefa, id: idItem });
+      addToExclude({ id: idusuario });
+      addToExclude({ idusuario, id: idtarefa });
+      addToExclude({ idtarefa, id: iditem });
     });
 
     it('Updates a task item description', async () => {
@@ -173,16 +154,14 @@ describe('Item Controller Suite', function () {
       expect(itemUpdated).to.not.have.property('dataatualizacao', item.dataatualizacao);
     });
     it('Updates a task conclusion', async () => {
-      const DONE = 1;
-
-      await controller.update(item.id, {...item, concluido: DONE});
+      await controller.update(item.id, {...item, concluido: true});
 
       database.Schema = itemSchema;
       const [itemUpdated] = await database.read({ id: item.id });
 
       expect(itemUpdated).to.not.null;
       expect(itemUpdated).to.have.property('id', item.id);
-      expect(itemUpdated).to.have.property('concluido', DONE);
+      expect(itemUpdated).to.have.property('concluido').that.is.true;
       expect(itemUpdated).to.not.have.property('dataatualizacao', item.dataatualizacao);
     });
   });
@@ -191,28 +170,26 @@ describe('Item Controller Suite', function () {
     let item;
 
     this.beforeAll(async () => {
-      const idUsuario = await createUsuario(USUARIO_MOCK);
-      const idTarefa = await createTarefa({...TAREFA_MOCK, idUsuario});
-      const idItem = await createItem({...ITEM_MOCK, idTarefa});
+      const idusuario = await createUsuario(USUARIO);
+      const idtarefa = await createTarefa({...TAREFA, idusuario});
+      const iditem = await createItem({...ITEM, idtarefa});
 
       database.Schema = itemSchema;
-      item = (await database.read({ id: idItem }))[0];
+      item = (await database.read({ id: iditem }))[0];
       
-      addToExclude({ id: idUsuario });
-      addToExclude({ idUsuario, id: idTarefa });
+      addToExclude({ id: idusuario });
+      addToExclude({ idusuario, id: idtarefa });
     });''
 
     it('Deletes a item by updating field "excluido"', async () => {
-      const DELETED = 1;
-
-      await controller.update(item.id, { ...item, excluido: DELETED });
+      await controller.update(item.id, { ...item, excluido: true });
 
       database.Schema = itemSchema;
       const [itemDeleted] = await database.read({ id: item.id });
 
       expect(itemDeleted).to.not.null;
       expect(itemDeleted).to.have.property('id', item.id);
-      expect(itemDeleted).to.have.property('excluido', DELETED);
+      expect(itemDeleted).to.have.property('excluido').that.is.true;
       expect(itemDeleted).to.not.have.property('dataatualizacao', item.dataatualizacao);
     });
 

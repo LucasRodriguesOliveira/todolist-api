@@ -14,9 +14,9 @@ class UserController extends Handler {
     this.#Secret = secret;
   }
 
-  async create(item) {
-    const hashPassword = await HashPassword(item.senha);
-    return await super.create({...item, senha: hashPassword});
+  async register(user) {
+    const hashPassword = await HashPassword(user.senha);
+    return await super.create({...user, senha: hashPassword});
   }
 
   async login(email, password) {

@@ -1,0 +1,31 @@
+{
+  "name": "task",
+  "routes": {
+    "create": {
+      "description": "Create Task",
+      "notes": "Creates one task",
+      "path": "/task"
+    },
+    "readById": {
+      "description": "Read Task",
+      "notes": "Reads one task by id",
+      "path": "/task/{id}"
+    },
+    "readByUserId": {
+      "description": "Read Task",
+      "notes": "Reads all tasks by user id",
+      "path": "/task/user/{id}"
+    },
+    "update": {
+      "description": "Update Task",
+      "notes": "Updates a specific task",
+      "path": "/task/{id}"
+    },
+    "delete": {
+      "description": "Delete Task",
+      "notes": "Deletes a task by task id",
+      "path": "/task/{id}"
+    }
+  },
+  "strings": { }
+}

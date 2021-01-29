@@ -1,26 +1,22 @@
 const { expect } = require('chai');
 const { USUARIO, TAREFA, ITEM } = require('./helper/dataMock.json');
-const UserController = require('../src/controller/user.controller');
-const TaskController = require('../src/controller/task.controller');
-const ItemController = require('../src/controller/item.controller');
-const Context = require('../src/database/base/context');
-const Server = require('../src/server');
 
-// * Configure Environment
-if(!globalThis.envSetup){
-  const { configEnviroment } = require('../src/helper/config');
-  configEnviroment(process.env.NODE_ENV);
-  globalThis.envSetup = true;
-}
+require('./helper/before')();
 
-let app = Object.create(null);
-describe.only('Item Route suite', function () {
+describe('Item Route test suite', function () {
   this.timeout(Infinity);
-  this.slow(500);
+  let app;
+
+  const UserController = require('../src/controller/user.controller');
+  const TaskController = require('../src/controller/task.controller');
+  const ItemController = require('../src/controller/item.controller');
+  const Context = require('../src/database/base/context');
+  const Server = require('../src/server');
+
   let userController = {};
   let taskController = {};
   let itemController = {};
-
+  
   this.beforeAll(async () => {
     const db = Context.createContext(process.env.DATABASE);
     userController = new UserController(db, process.env.SECRET);
@@ -30,14 +26,16 @@ describe.only('Item Route suite', function () {
     app = await Server;
   });
 
+  this.afterAll(async () => { await app.stop({ timeout: 0 }); });
+
   describe('Create Item', function() {
     let usr = {};
     let task = {};
     let item = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
-      task = await taskController.create({...TAREFA, idUsuario: usr.id});
+      usr = await userController.register(USUARIO);
+      task = await taskController.create({...TAREFA, idusuario: usr.id});
     });
 
     this.afterAll(async () => {
@@ -66,8 +64,8 @@ describe.only('Item Route suite', function () {
     let item = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
-      task = await taskController.create({...TAREFA, idUsuario: usr.id});
+      usr = await userController.register(USUARIO);
+      task = await taskController.create({...TAREFA, idusuario: usr.id});
       item = await itemController.create({...ITEM, idtarefa: task.id});
     });
 
@@ -96,8 +94,8 @@ describe.only('Item Route suite', function () {
     let item = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
-      task = await taskController.create({...TAREFA, idUsuario: usr.id});
+      usr = await userController.register(USUARIO);
+      task = await taskController.create({...TAREFA, idusuario: usr.id});
       item = await itemController.create({...ITEM, idtarefa: task.id});
     });
 
@@ -162,8 +160,8 @@ describe.only('Item Route suite', function () {
     let item = {};
 
     this.beforeAll(async () => {
-      usr = await userController.create(USUARIO);
-      task = await taskController.create({...TAREFA, idUsuario: usr.id});
+      usr = await userController.register(USUARIO);
+      task = await taskController.create({...TAREFA, idusuario: usr.id});
       item = await itemController.create({...ITEM, idtarefa: task.id});
     });
 

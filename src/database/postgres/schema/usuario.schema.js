@@ -28,12 +28,12 @@ const schema = {
     type: Sequelize.STRING(150),
     allowNull: false,
   },
-  dataCriacao: {
+  datacriacao: {
     type: Sequelize.DATE,
     allowNull: false,
     defaultValue: Sequelize.DataTypes.NOW
   },
-  dataAtualizacao: {
+  dataatualizacao: {
     type: Sequelize.DATE,
     allowNull: false,
     defaultValue: Sequelize.DataTypes.NOW
