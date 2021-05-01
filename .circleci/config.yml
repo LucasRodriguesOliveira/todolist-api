@@ -3,12 +3,15 @@ version: 2.1
 orbs:
   node: circleci/node@4.3
 
+executors:
+  linux:
+    ubuntu:
+      - image: ubuntu-2004:202104-01
+
 jobs:
   all_tests_ubuntu:
     description: Execute all tests in Linux Ubuntu
-    executor:
-      machine:
-        - image: ubuntu-2004:202104-01
+    executor: linux
     steps:
       - checkout
       - run: npm install
