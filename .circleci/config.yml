@@ -4,7 +4,7 @@ orbs:
   node: circleci/node@4.3
 
 jobs:
-  "Execute all tests in Docker":
+  'Execute all tests in Docker':
     executor:
       name: node/default
       tag: '14.15.3'
@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run: npm install
       - run: npm test
-  "Execute all tests in Linux Ubuntu":
+  'Execute all tests in Linux Ubuntu':
     executor:
       machine:
         - image: ubuntu-2004:202104-01
