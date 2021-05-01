@@ -15,7 +15,7 @@ jobs:
             - run: npm install
       - run: npm test
 
-workflow:
+workflows:
   version: 2.1
   run_tests:
     jobs:
