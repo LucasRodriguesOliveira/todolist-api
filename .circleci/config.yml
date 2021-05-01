@@ -10,9 +10,7 @@ jobs:
       tag: '14.15.3'
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
+      - run: npm install
       - run: npm test
 
 workflows:
